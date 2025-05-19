@@ -1,6 +1,7 @@
 \documentclass[twoside]{article}
 
 \usepackage{ustj}
+\usepackage{enumitem}  % for enumerate with labels
 
 \addbibresource{mss.bib}
 
@@ -37,6 +38,7 @@
 \thispagestyle{firststyle}
 
 \begin{abstract}
+  Nock is a family of computational languages derived from the \textsc{ski} combinator calculus.  It serves as the \textsc{isa} specification layer for the Urbit and NockApp systems.  This article outlines the extant historical versions of the Nock combinator calculus and reconstructs the motivation for the changes made at each kelvin decrement.  It begins with an exposition of Nock as a tool of computation, outlines the history of Nock's decrements, and speculates on motivations for possible future developments.
 \end{abstract}
 
 % We will adjust page numbering in final editing.
@@ -80,7 +82,7 @@ Nock bears the following characteristics:
   \item  Solid-state.  A Nock interpreter is a solid-state machine, meaning that it operates from a state to a new state strictly according to inputs as a pure lifecycle function.  The Nock interpreter must commit the results of a successful computation as the new state before subsequent computations, or events, can be evaluated.  Transient evaluations (uncompleted events) and crashes (invalid evaluations) may be lost without consequence, and the Nock interpreter layer persists the underlying state of the machine.
 \end{itemize}
 
-We have asserted without demonstration that Nock is a combinator calculus.  We now show that this is the case, with reference to Nock 4K, the latest specification.  The simplest combinator calculus consists of only three combinators \citep{SomeoneSmart}, \textsc{s}, \textsc{k}, and \textsc{i}.  These combinators are defined as follows:
+We have asserted without demonstration thus far that Nock is a combinator calculus.  We now show that this is the case, with reference to Nock 4K, the latest specification.  The simplest combinator calculus consists of only three combinators \citep{SomeoneSmart}, \textsc{s}, \textsc{k}, and \textsc{i}.  These combinators are defined as follows:
 
 \begin{enumerate}
   \item  \textsc{s} substitution.  This corresponds to Nock 4K's opcode 2, which substitutes the second argument into the first argument at the third argument's axis.  (There are some subtle differences to Nock's expression of \textsc{s} as opcode 2 that we will elide as being fundamentally similar, but perhaps worthy of its own monograph.)
@@ -91,107 +93,63 @@ We have asserted without demonstration that Nock is a combinator calculus.  We n
 \noindent
 While Nock introduces a few more primitive operations as a practicality, the above identities establish its bona fides as a combinator calculus capable of general computation.  Similar to Haskell Curry's \textsc{bckw} system, which can be written in forms reducible to \textsc{ski}, Nock provides a set of primitive rules and a set of economic extended rules for convenience in writing a compiler.  (See \citet{Galebach2025}, pp.~XX–XX in this volume, for exposition on how to evaluate a Nock expression by hand or by interpreter.)
 
+In an early document, Yarvin explained two of his design criteria in producing Nock as a practical \textsc{isa} target \citep{Yarvin2010}:
 
+\begin{enumerate}
+  \item  Natural conversion of source to code without other inputs.
+  \item  Metacircularity without deep stacks; i.e., the ability to extend Nock semantics without altering the underlying substrate.
+\end{enumerate}
 
-
-
-### Event Loop
-
-The beating heart of an operational system using Nock is the event loop formula.  For each event that is injected, the system runs this formula in the kernel's `+aeon` arm:
-
-```
-.*([arvo -.epic] [9 2 10 [6 0 3] 0 2])
-```
-
-Let's talk through what is going on here.
-
-- The subject consists of a pair of `arvo`, the evolution from underlying operating system and standard library until the current epitome state, and the head of `epic`, where `epic` is the remaining event log to be evaluated.
-- The formula is a 9 which runs the head of the event log, `[0 3]`, against the whole subject, then replaces that into the head of the subject.
-- The next event is then evaluated, until the list is empty.
-- When it reaches the end of the event log, the runtime holds it in stasis until the next event is prepared to be injected.
-
-
-### Jets
-
-
-Jet dispatch does incur some overhead, which is generally worthwhile
-
-## Tree-Walking Interpreter
-
-Nock is interpreted in the sense that it is produced to be executed by a virtual machine layer.  A human end-user language will be parsed and interpreted into an abstract syntax tree, then converted into raw Nock for evaluation.  This Nock is itself interpreted at runtime by a tree-walking interpreter.
-
-This interpreter takes a Nock formula as input, recursively traverses the formula tree, evaluates each operation according to its subject, and returns the resulting noun.
-
-The upside of Nock is that this process is fully general and portable.  And since Nock is a both an ISA and a specification, when jetted code is available it can be evaluated in a faster way as much as possible.
-
-So, some of you are going to ask me, what's the alternative to a tree-walking interpreter?  To answer that, let's think about the Nock execution pattern.  The major downside of Nock as an ISA is that it is a hyper-RISC that does not closely map to von Neumann architecture CPU operations.  Modern computer architectures prefer to grab arrays in a hierarchy of caches, but a binary tree implementation does not lend itself well to this arrangement.  Furthermore, because Nock is homoiconic, it is not straightforward to tell from a tree-walking interpreter if a given noun is code or data.  A newer paradigm, called subject knowledge analysis, proposes to fix this by a system of JIT-like affordances produced by a static analysis at compile time.  SKA enables efficient analysis and execution of Nock code by unearthing the computational structure of the code even in an untyped procedure-free environment.
-
-### Nock Bytecode
-
-There are currently two practical Nock interpreters in production, Urbit's Vere and Zorp's Sword.  They both currently use a tree-walking interpreter, but a more sophisticated protocol is in active development.  We will take a brief look at Vere's bytecode implementation.
-
-Vere walks the Nock tree to produce a linear bytecode array for rapid evaluation.  The bytecode interpreter is a stack machine built on top of an allocator.  It uses a threaded code pattern or a computed `GOTO`.  While it is highly optimized on its own terms, the gains are often clawed back by other parts of the system.
-
-Vere can reveal the bytecode to us if we query it with an `%xray` Nock 11 hint.
-
-For instance
-
-We can see these by passing a Nock 11 `%xray` hint at the command line.
-
-```
-{[lils 65535] halt}
-> ~>  %xray  65.535
-65.535
-{[libl i:0] halt}
-> ~>  %xray  65.536
-65.536
-
-```
-
-As with other bytecodes, these can be rather opaque.  (In this case, we are sometimes left with labels and pointers to data in other locations rather than the complete data set.)  Vere's bytecode interpreter is, I have been told, rather simple and primitive.
-
-```hoon
-> !=  +(41)
-[4 1 41]
-
-> ~>  %xray  +(41)
-{[lilb 41] bump halt}
-
-> !=  (dec 43)
-[8 [9 2.398 0 1.023] 9 2 10 [6 7 [0 3] 1 43] 0 2]
-
-> ~>  %xray  (dec 43)
-{[fask 1023] [kicb 1] snol head swap tail [lilb 43] musm [ticb 0] halt}
-```
+This latter idea he particularly connected to the concept of a ``scry namespace'':  ``dereferencing Urbit paths is as natural (and stateless) a function as increment or equals'' (ibid.).  Indeed, Urbit's current userspace utilizes such an affordance to replicate a global scope environment for accessing system and remote resources.  (See \citet{Davis2025b}, pp.~XX–XX in this volume, for a discussion of the Nock virtualized interpreter.)
+%Yarvin2010:  https://github.com/cgyarvin/urbit/blob/1bc9086a3fd62594e8bd631744cb9bf804f6a43b/Spec/urbit/5-whynock.txt
 
 
 \section{Nock's Decrements}
 
-The earliest extant Nock is \texttt{U}, a proto-Nock posted to the \textit{Lambda the Ultimate} blog in 2006 \citep{Yarvin2006}.\footnote{Curtis Yarvin was consulted for elements of this history.  Unfortunately many elements of the original prehistory of Nock appear to be lost to the sands of time on unrecoverable hard drives.}  The draft is versioned 0.15, but it is unclear whether this relates to kelvin versioning or not.  The document is produced in full in Listing~\ref{lst:u}.
+The Nock family survives in a trail of breadcrumbs, with each version of the specification being a kelvin decrement of the previous version.  Early versions were produced exclusively by Curtis Yarvin, eventually involving the input of other developers after the 2013 founding of Tlon Corporation.  In this section, we present each extant version of the Nock specification and comment on the changes and their motivations.  Only the layouts have been changed for print.  Dates for Nock specifications are derived from dated public posts (U, 9K), internal dating (13K, 12K, 11K, 10K), or from Git commit history data (8K, 7K, 6K, 5K).\footnote{In at least one case (7K), Yarvin claims to have finished the proposal a month earlier but to not have posted it until this date.}  No version of 14K survives publicly, nor does any primordial version prior to \texttt{U} (15K) appear to exist.
+
+Yarvin's background as a systems engineer with systems like Xaos Tools (for \textsc{sgi} Irix), Geoworks (on DoCoMo's iMode), and Unwired Planet (on the Wireless Application Protocol, \textsc{wap}) inclined him towards a formal break with Unix-era computing \citep{Yarvin2025}.  He sought to produce a system enabling server-like behavior rather than a network of clients dependent on centralized servers for a functional Internet.  This required a deep first-principles rederivation of computing; the foundational layer was a combinator calculus which became Nock.  Nock was intended from the beginning to become less provisional over time, encoding a kelvin decrement which forced the specification to converge on a sufficiently good set of opcodes.  Many downstream consequences of Urbit and NockApp as systems derive directly from the affordances encoded into Nock.
+
+\subsection{U}
+
+\begin{quote}
+I have not really worked with combinator models, but my general impression is that it takes essentially an infinite amount of syntactic sugar to turn them into a programming language. \texttt{U} certainly takes some sweetener, but not, I think, as much.  (Curtis Yarvin)
+\end{quote}
+
+The earliest extant Nock is \texttt{U}, a proto-Nock posted to the \textit{Lambda the Ultimate} blog in 2006 \citep{Yarvin2006}.\footnote{Curtis Yarvin was consulted for elements of this history.  Unfortunately many elements of the original prehistory of Nock appear to be lost to the sands of time on unrecoverable hard drives.}  The draft is versioned 0.15; subsequent evidence indicates that this is a downward-counting kelvin-versioned document already.  The specification is produced in full in Listing~\ref{lst:u}.
 % Yarvin2006, http://lambda-the-ultimate.org/node/1269
 % Yarvin2006a, https://web.archive.org/web/20060701070718/http://urbit.sourceforge.net/u.txt
 
-Yarvin had likely been influenced by X.
-(He later cited Y.)
+Extensive commentary on the operators is provided.  Rightwards grouping of tuple expressions has already been introduced.  Extension of the language is summarily ruled out.\footnote{Compare Ax and Conk, pp.~XX–XX herein.}  Details of parsing and lexing are considered.  Terms (the ancestor of nouns) include a \texttt{NULL}-like ``foo'' type \texttt{\textasciitilde} distinguishable by value rather than structure.  \textsc{ascii} is built in as numeric codes, similar to G\"{o}del numbering.
 
-\begin{lstlisting}[label=lst:u,caption={U: Definition.  The earliest extant Nock.  Only layout has been changed for print.},style=listingcode]
+As commenter Mario B.\ pointed out, the U specification permits \textsc{ski} operators with the simple expressions,
+
+\begin{lstlisting}[style=listingcode]
+   [name]   [pattern]            [definition]
+    (I)      (I $a)               $a
+    (K)      (K $a $b)            $b
+    (S)      (S $a $b $c)         ($a $c ($b $c))
+\end{lstlisting}
+
+While early work (1940s--50s) had been carried out on ``minimal instruction set computers'' (\textsc{misc}s), it is more likely that Yarvin was influenced by contemporaneous work on ``reduced instruction set computers'' (\textsc{risc}s) in the 1980s and 90s.  Language proposals like that of \citet{Burger2006} (Pico Lisp) may have influenced Yarvin's design choices throughout this era.
+%Burger2006 https://software-lab.de/radical.pdf
+
+The \texttt{U} specification is in some ways the single most interesting historical document of our series.  Yarvin particularly identified a desire to avoid baking abstractions like variables and functions into the \texttt{U} cake, and an emphasis on client–server semantics.  The scry namespace appears \emph{avant la lettre} as a referentially transparent immutable distributed namespace.  \texttt{U} expresses a very ambitious hyper-Turing operator, acknowledging that its own instantiation from the specification is impossible and approximate.  Yarvin grapples in \texttt{U} with the halting problem (via his follow operator) and with the tension between a specification and an implementation (a gulf he highlighted as a human problem in his 2025 LambdaConf keynote address).  Furthermore, asides on issues like the memory arena prefigure implementation details of Vere as a runtime.
+
+\begin{lstlisting}[label=lst:u,caption={U, 31 January 2006.  The earliest extant patriarch of the Nock family.},style=listingcode]
 U: Definition
 
 1 Purpose
-
     This document defines the U function and its data
     model.
 
 2 License
-
     U is in the public domain.
 
 3 Status
-
     This text is a DRAFT (version 0.15).
 
 4 Data
-
     A value in U is called a "term."  There are three
     kinds of term: "number," "pair," and "foo."
 
@@ -203,14 +161,12 @@ U: Definition
     There is only one foo.
 
 5 Syntax
-
     U is a computational model, not a programming
     language.
 
     But a trivial ASCII syntax for terms is useful.
 
 5.1 Trivial syntax: briefly
-
     Numbers are in decimal.  Pairs are in parentheses
     that nest to the right.  Foo is "~".
 
@@ -218,7 +174,6 @@ U: Definition
     use "#".
 
 5.2 Trivial syntax: exactly
-
     term    : number
             | 40 ?white pair ?white 41
             | foo
@@ -234,14 +189,12 @@ U: Definition
     white   : *(32 | 10 | (35 *[32-126] 10))
 
 6 Semantics
-
     U is a pure function from term to term.
 
     This document completely defines U.  There is no
     compatible way to extend or revise U.
 
 6.1 Rules
-
     [name]   [pattern]                [definition]
 
     (a)      ($a 0 $b)                $b
@@ -272,12 +225,10 @@ U: Definition
     this file. Its definition follows.
 
 6.2 Rule pseudocode: briefly
-
     Each line is a pattern match.  "%" means
     "number."  Match in order.  See operators below.
 
 6.3 Rule pseudocode: exactly
-
     Both pattern and definition use the same
     evaluation language, an extension of the trivial
     syntax.
@@ -286,40 +237,41 @@ U: Definition
     term, a term-valued variable, or a unary
     operation.
 
-    Variables are symbols marked with a constraint.  A variable
-    "$name" matches any term.  "%name" matches any number.
+    Variables are symbols marked with a constraint.
+    A variable "$name" matches any term.  "%name"
+    matches any number.
 
-    There are four unary prefix operators, each of which is a
-    pure function from term to term: "=", "+", "*", and ">".
-    Their semantics follow.
+    There are four unary prefix operators, each of
+    which is a pure function from term to term: "=",
+    "+", "*", and ">". Their semantics follow.
 
 6.4 Evaluation semantics
-
     For any term $term, to compute U($term):
 
-        - find the first pattern, in order, that matches $term.
-
-        - substitute its variable matches into its definition.
-
+        - find the first pattern, in order, that
+          matches $term.
+        - substitute its variable matches into its
+          definition.
         - compute the substituted definition.
 
-    Iff this sequence of steps terminates, U($term) "completes."
-    Otherwise it "chokes."
+    Iff this sequence of steps terminates, U($term)
+    "completes." Otherwise it "chokes."
 
-    Evaluation is strict: incorrect completion is a bug.  Choking
-    is U's only error or exception mechanism.
+    Evaluation is strict: incorrect completion is a
+    bug.  Choking is U's only error or exception
+    mechanism.
 
 6.5 Simple operators: equal, increment, evaluate
-
-    =($a $b) is 0 if $a and $b are equal; 1 if they are not.
+    =($a $b) is 0 if $a and $b are equal; 1 if they
+    are not.
 
     +%n is %n plus 1.
 
     *$a is U($a).
 
 6.6 The follow operator
-
-    >($a $b $c) is always 0.  But it does not always complete.
+    >($a $b $c) is always 0.  But it does not always
+    complete.
 
     We say "$c follows $b in $a" iff, for every $term:
 
@@ -329,87 +281,823 @@ U: Definition
         if *($a 5 $b $term) completes:
             either:
                 *($a 5 $c $term) completes, and
-                *($a 5 $c $term) equals *($a 5 $b $term)
+                *($a 5 $c $term) equals
+                  *($a 5 $b $term)
             or:
                 *($a 5 $c $term) chokes.
 
     If $c follows $b in $a, >($a $b $c) is 0.
 
-    If this statement cannot be shown (ie, if there exists any
-    $term that falsifies it, generates an infinitely recursive
-    series of follow tests, or is inversely self-dependent, ie,
-    exhibits Russell's paradox), >($a $b $c) chokes.
+    If this statement cannot be shown (ie, if there
+    exists any $term that falsifies it, generates an
+    infinitely recursive series of follow tests, or is
+    inversely self-dependent, ie, exhibits Russell's
+    paradox), >($a $b $c) chokes.
 
 7 Implementation issues
-
     This section is not normative.
 
 7.1 The follow operator
+    Of course, no algorithm can completely implement
+    the follow operator.  So no program can completely
+    implement U.
 
-    Of course, no algorithm can completely implement the follow
-    operator.  So no program can completely implement U.
+    But this does not stop us from stating the
+    correctness of a partial implementation - for example,
+    one that assumes a hardcoded set of follow cases, and
+    fails when it would otherwise have to compute a follow
+    case outside this set.
 
-    But this does not stop us from stating the correctness of
-    a partial implementation - for example, one that assumes
-    a hardcoded set of follow cases, and fails when it would
-    otherwise have to compute a follow case outside this set.
+    U calls this a "trust failure."  One way to
+    standardize trust failures would be to standardize
+    a fixed set of follow cases as part of the definition
+    of U.  However, this is equivalent to standardizing a
+    fixed trusted code base.  The problems with this
+    approach are well-known.
 
-    U calls this a "trust failure."  One way to standardize trust
-    failures would be to standardize a fixed set of follow cases
-    as part of the definition of U.  However, this is equivalent
-    to standardizing a fixed trusted code base.  The problems
-    with this approach are well-known.
+    A better design for U implementations is to
+    depend on a voluntary, unstandardized failure
+    mechanism.  Because all computers have bounded memory,
+    and it is impractical to standardize a fixed memory
+    size and allocation strategy, every real computing
+    environment has such a mechanism.
 
-    A better design for U implementations is to depend on a
-    voluntary, unstandardized failure mechanism.  Because all
-    computers have bounded memory, and it is impractical to
-    standardize a fixed memory size and allocation strategy,
-    every real computing environment has such a mechanism.
+    For example, packet loss in an unreliable packet
+    protocol, such as UDP, is a voluntary failure
+    mechanism.
 
-    For example, packet loss in an unreliable packet protocol,
-    such as UDP, is a voluntary failure mechanism.
-
-    If the packet transfer function of a stateful UDP server is
-    defined in terms of U, failure to compute means dropping a
-    packet.  If the server has no other I/O, its semantics are
-    completely defined by its initial state and packet function.
+    If the packet transfer function of a stateful UDP
+    server is defined in terms of U, failure to compute
+    means dropping a packet.  If the server has no other
+    I/O, its semantics are completely defined by its
+    initial state and packet function.
 
 7.2 Other unstandardized implementation details
+    A practical implementation of U will detect and
+    log common cases of choking.  It will also need a
+    timeout or some other unspecified mechanism to
+    abort undetected infinite loops.
 
-    A practical implementation of U will detect and log common
-    cases of choking.  It will also need a timeout or some other
-    unspecified mechanism to abort undetected infinite loops.
+    (Although trust failure, allocation failure or
+    timeout, and choke detection all depend on what
+    is presumably a single voluntary failure
+    mechanism, they are orthogonal and should not be
+    confused.)
 
-    (Although trust failure, allocation failure or timeout, and
-    choke detection all depend on what is presumably a single
-    voluntary failure mechanism, they are orthogonal and should
-    not be confused.)
+    Also, because U is so abstract, differences in
+    implementation strategy can result in performance
+    disparities which are almost arbitrarily extreme.
+    The difficulty of standardizing performance is
+    well-known.
 
-    Also, because U is so abstract, differences in implementation
-    strategy can result in performance disparities which are
-    almost arbitrarily extreme.  The difficulty of standardizing
-    performance is well-known.
-
-    No magic bullet can stop these unstandardized issues from
-    becoming practical causes of lock-in and incompatibility.
-    Systems which depend on U must manage them at every layer.
+    No magic bullet can stop these unstandardized
+    issues from becoming practical causes of lock-in
+    and incompatibility. Systems which depend on U
+    must manage them at every layer.
 \end{lstlisting}
 
+In plain language, the rules of \texttt{U} are as follows:
+
+\begin{enumerate}[label=(\alph*)]
+  %a
+  \item  axis lookup
+  %b
+  \item  cell detection
+  %c
+  \item  atom detection
+  %d
+  \item  constant
+  %e
+  \item
+  %f
+  \item  equality
+  %g
+  \item  increment
+  %h
+  \item
+  %i
+  \item
+  %j
+  \item
+  %k
+  \item
+  %l
+  \item  cell distribution
+  %m
+  \item  head
+  %n
+  \item
+  %o
+  \item
+  %p
+  \item  hyper-Turing follow operator
+  %q
+  \item
+  %r
+  \item  cell distribution
+  %s
+  \item  trivial evaluation
+\end{enumerate}
+
+\subsection{Nock 13K}
+
+At some point between January 2006 and March 2008, Nock acquired its cognomen.
+
+The only compound opcode is opcode 6, the conditional branch opcode.
+
+Axiomatic operator \texttt{*} is identified as a \texttt{GOTO}.
+
+\begin{lstlisting}[label=lst:nock13k,caption={Nock 13K, 8 March 2008.},style=listingcode]
+Author: Curtis Yarvin (curtis.yarvin@gmail.com)
+Date: 3/8/2008
+Version: 0.13
+
+1. Manifest
+
+    This file defines one Turing-complete function, "nock."
+
+    nock is in the public domain.  So far as I know, it is
+    neither patentable nor patented.  Use it at your own risk.
+
+2. Data
+
+    Both the domain and range of nock are "nouns."
+
+    A "noun" is either an "atom" or a "cell."  An "atom" is an unsigned
+    integer of any size.  A "cell" is an ordered pair of any two nouns,
+    the "head" and "tail."
+
+3. Pseudocode
+
+    nock is defined in a pattern-matching pseudocode.
+
+    Match precedence is top-down.  Operators are prefix.  Parens
+    denote cells, and group right: (a b c) is (a (b c)).
+
+4. Definition
+
+4.1 Transformations
+
+      *(a 0 b c)   => *(*(a b) c)
+      *(a 0 b)     => /(b a)
+      *(a 1 b)     => (b)
+      *(a 2 b)     => **(a b)
+      *(a 3 b)     => &*(a b)
+      *(a 4 b)     => ^*(a b)
+      *(a 5 b)     => =*(a b)
+      *(a 6 b c d) => *(a 2 (0 1) 2 (1 c d) (1 0) 2 (1 2 3) (1 0) 4 4 b)
+      *(a b c)     => (*(a b) *(a c))
+      *(a)         => *(a)
+
+4.2 Operators
+
+4.2.1 Goto (*)
+
+      *(a)             -> nock(a)
+
+4.2.2 Deep (&)
+
+      &(a b)           -> 0
+      &(a)             -> 1
+
+4.2.3 Bump (^)
+
+      ^(a b)           -> ^(a b)
+      ^(a)             -> a + 1
+
+4.2.4 Same (=)
+
+      =(a a)           -> 0
+      =(a b)           -> 1
+      =(a)             -> =(a)
+
+4.2.5 Snip (/)
+
+      /(1 a)           -> a
+      /(2 a b)         -> a
+      /(3 a b)         -> b
+      /((a + a) b)     -> /(2 /(a b))
+      /((a + a + 1) b) -> /(3 /(a b))
+      /(a)             -> /(a)
+\end{lstlisting}
+
+\subsection{Nock 12K}
+
+Opcodes were reordered slightly.  A dynamic hint opcode 8 and a static hint opcode 9 were added.
+
+TODO is that 8?
+
+\begin{lstlisting}[label=lst:nock12k,caption={Nock 12K, 2008.},style=listingcode]
+Author: Curtis Yarvin (curtis.yarvin@gmail.com)
+Date: 3/28/2008
+Version: 0.12
+
+1. Introduction
+
+    This file defines one function, "nock."
+
+    nock is in the public domain.
+
+2. Data
+
+    A "noun" is either an "atom" or a "cell."  An
+    "atom" is an unsigned integer of any size.  A
+    "cell" is an ordered pair of any two nouns,
+    the "head" and "tail."
+
+3. Semantics
+
+    nock maps one noun to another.  It doesn't
+    always terminate.
+
+4. Pseudocode
+
+    nock is defined in a pattern-matching
+    pseudocode, below.
+
+    Parentheses enclose cells.  (a b c) is
+    (a (b c)).
+
+5. Definition
+
+5.1 Transformations
+
+      *(a (b c) d) => (*(a b c) *(a d))
+      *(a 0 b)     => /(b a)
+      *(a 1 b)     => (b)
+      *(a 2 b c)   => *(*(a b) c)
+      *(a 3 b)     => **(a b)
+      *(a 4 b)     => &*(a b)
+      *(a 5 b)     => ^*(a b)
+      *(a 6 b)     => =*(a b)
+
+      *(a 7 b c d) => *(a 3 (0 1) 3 (1 c d) (1 0)
+                        3 (1 2 3) (1 0) 5 5 b)
+      *(a 8 b c)   => *(a 2 (((1 0) b) c) 0 3)
+      *(a 9 b c)   => *(a c)
+
+      *(a)         => *(a)
+
+5.2 Operators
+
+5.2.1 Goto (*)
+
+      *(a)             -> nock(a)
+
+5.2.2 Deep (&)
+
+      &(a b)           -> 0
+      &(a)             -> 1
+
+5.2.4 Bump (^)
+
+      ^(a b)           -> ^(a b)
+      ^(a)             -> a + 1
+
+5.2.5 Same (=)
+
+      =(a a)           -> 0
+      =(a b)           -> 1
+      =(a)             -> =(a)
+
+5.2.6 Snip (/)
+
+      /(1 a)           -> a
+      /(2 a b)         -> a
+      /(3 a b)         -> b
+      /((a + a) b)     -> /(2 /(a b))
+      /((a + a + 1) b) -> /(3 /(a b))
+      /(a)             -> /(a)
+\end{lstlisting}
+
+\subsection{Nock 11K}
+
+TODO
+
+The kelvin versioning system here became explicit (rather than implicitly decreasing minor versions).
+
+\begin{lstlisting}[label=lst:nock11k,caption={Nock 11K, 25 May 2008.},style=listingcode]
+Author: Mencius Moldbug (moldbug@gmail.com)
+Date: 5/25/2008
+Version: 11K
+
+1. Introduction
+
+    This file defines one function, "nock."
+
+    nock is in the public domain.
+
+2. Data
+
+    A "noun" is either an "atom" or a "cell."  An "atom" is an unsigned
+    integer of any size.  A "cell" is an ordered pair of any two nouns,
+    the "head" and "tail."
+
+3. Semantics
+
+    nock maps one noun to another.  It doesn't always terminate.
+
+4. Pseudocode
+
+    nock is defined in a pattern-matching pseudocode, below.
+
+    Parentheses enclose cells.  (a b c) is (a (b c)).
+
+5. Definition
+
+5.1 Transformations
+
+      *(a (b c) d) => (*(a b c) *(a d))
+      *(a 0 b)     => /(b a)
+      *(a 1 b)     => (b)
+      *(a 2 b c d) => *(a 3 (0 1) 3 (1 c d) (1 0)
+                        3 (1 2 3) (1 0) 5 5 b)
+      *(a 3 b)     => **(a b)
+      *(a 4 b)     => &*(a b)
+      *(a 5 b)     => ^*(a b)
+      *(a 6 b)     => =*(a b)
+
+      *(a 7 b c)   => *(a 3 (((1 0) b) c) 1 0 3)
+      *(a 8 b c)   => *(a c)
+
+      *(a)         => *(a)
+
+5.2 Operators
+
+5.2.1 Goto (*)
+
+      *(a)             -> nock(a)
+
+5.2.2 Deep (&)
+
+      &(a b)           -> 0
+      &(a)             -> 1
+
+5.2.4 Bump (^)
+
+      ^(a b)           -> ^(a b)
+      ^(a)             -> a + 1
+
+5.2.5 Same (=)
+
+      =(a a)           -> 0
+      =(a b)           -> 1
+      =(a)             -> =(a)
+
+5.2.6 Snip (/)
+
+      /(1 a)           -> a
+      /(2 a b)         -> a
+      /(3 a b)         -> b
+      /((a + a) b)     -> /(2 /(a b))
+      /((a + a + 1) b) -> /(3 /(a b))
+      /(a)             -> /(a)
+\end{lstlisting}
+
+\subsection{Nock 10K}
+
+Parentheses were replaced by brackets.  Opcodes were reordered slightly.  Compound opcodes for composition and extension (variable definition) were removed.  Functionally, 11K and 10K appear very similar, particularly if the Watt (proto-Hoon) compiler is set up to produce variable declarations and compositions as the compound opcodes had them.
+
+\begin{lstlisting}[label=lst:nock10k,caption={Nock 10K, 15 September 2008.},style=listingcode]
+Author: Mencius Moldbug [moldbug@gmail.com]
+Date: 9/15/2008
+Version: 10K
+
+1. Introduction
+
+    This file defines one function, "nock."
+
+    nock is in the public domain.
+
+2. Data
+
+    A "noun" is either an "atom" or a "cell."  An "atom" is an unsigned
+    integer of any size.  A "cell" is an ordered pair of any two nouns,
+    the "head" and "tail."
+
+3. Semantics
+
+    nock maps one noun to another.  It doesn't always terminate.
+
+4. Pseudocode
+
+    nock is defined in a pattern-matching pseudocode, below.
+
+    Brackets enclose cells.  [a b c] is [a [b c]].
+
+5. Definition
+
+5.1 Transformations
+
+      *[a [b c] d] => [*[a b c] *[a d]]
+      *[a 0 b]     => /[b a]
+      *[a 1 b]     => [b]
+      *[a 2 b c d] => *[a 3 [0 1] 3 [1 c d]
+                        [1 0] 3 [1 2 3] [1 0] 5 5 b]
+      *[a 3 b]     => **[a b]
+      *[a 4 b]     => &*[a b]
+      *[a 5 b]     => ^*[a b]
+      *[a 6 b]     => =*[a b]
+      *[a]         => *[a]
+
+5.2 Operators
+
+5.2.1 Goto [*]
+
+      *[a]             -> nock[a]
+
+5.2.2 Deep [&]
+
+      &[a b]           -> 0
+      &[a]             -> 1
+
+5.2.4 Bump [^]
+
+      ^[a b]           -> ^[a b]
+      ^[a]             -> (a + 1)
+
+5.2.5 Like [=]
+
+      =[a a]           -> 0
+      =[a b]           -> 1
+      =[a]             -> =[a]
+
+5.2.6 Snip [/]
+
+      /[1 a]           -> a
+      /[2 a b]         -> a
+      /[3 a b]         -> b
+      /[(a + a) b]     -> /[2 /[a b]]
+      /[(a + a + 1) b] -> /[3 /[a b]]
+      /[a]             -> /[a]
+\end{lstlisting}
+
+\subsection{Nock 9K}
+
+The cell detection axiomatic operator underlying opcode 4 (cell detection) was changed from \texttt{\&} to \texttt{?}.
+
+This version of Nock was published on the Moron Lab blog in 2010 \citep{Yarvin2010} as ``Maxwell's equations of software''.  Yarvin emphasized that Nock was intended to serve as ``foundational system software rather than foundational metamathematics'' (ibid.).
+
+Yarvin also publicly exposed his thoughts about building a practical higher-level language on top of Nock at this point (ibid.):
+
+\begin{quote}
+To define a language with Nock, construct two nouns, \texttt{q} and \texttt{r}, such that \texttt{*[q r]} equals \texttt{r}, and \texttt{*[s *[p r]]} is a useful functional language. In this description,
+\begin{itemize}
+  \item  \texttt{p} is the function source;
+  \item  \texttt{q} is your language definition, as source;
+  \item  \texttt{r} is your language definition, as data;
+  \item  \texttt{s} is the input data.
+\end{itemize}
+\end{quote}
+TODO bug in expression?
+
+More concretely, Watt (the predecessor to Hoon) is defined as:
+
+\begin{lstlisting}[style=listingcode]
+urbit-formula == Watt(urbit-source)
+              == Nock(urbit-source watt-formula)
+watt-formula == Watt(watt-source)
+             == Nock(watt-source watt-formula)
+\end{lstlisting}
+
+\noindent
+TODO
+
+Versus 10K, 9K elides operator names in favor of definitions.  Other differences are likewise primarily terminological, such as the replacement of \texttt{Deep} \texttt{\&} with \texttt{?}.
+
+Yarvin has been to think about virtualizing Nock interpretation to expose a broader namespace for interaction with values than the ``strict'' subject of a formula \citep{Yarvin2010}.
+
+\begin{lstlisting}[label=lst:nock9k,caption={Nock 9K, \textit{terminus ad quem} 7 January 2010.},style=listingcode]
+1 Context
+
+    This spec defines one function, Nock.
+
+2 Structures
+
+    A noun is an atom or a cell.  An atom is any unsigned integer.
+    A cell is an ordered pair of any two nouns.
+
+3 Pseudocode
+
+    Brackets enclose cells.  [a b c] is [a [b c]].
+
+    *a is Nock(a).  Reductions match top-down.
+
+4 Reductions
+
+    ?[a b]           => 0
+    ?a               => 1
+
+    ^[a b]           => ^[a b]
+    ^a               => (a + 1)
+
+    =[a a]           => 0
+    =[a b]           => 1
+    =a               => =a
+
+    /[1 a]           => a
+    /[2 a b]         => a
+    /[3 a b]         => b
+    /[(a + a) b]     => /[2 /[a b]]
+    /[(a + a + 1) b] => /[3 /[a b]]
+    /a               => /a
+
+    *[a 0 b]         => /[b a]
+    *[a 1 b]         => b
+    *[a 2 b c d]     => *[a 3 [0 1] 3 [1 c d]
+                          [1 0] 3 [1 2 3] [1 0] 5 5 b]
+    *[a 3 b]         => **[a b]
+    *[a 4 b]         => ?*[a b]
+    *[a 5 b]         => ^*[a b]
+    *[a 6 b]         => =*[a b]
+    *[a [b c] d]     => [*[a b c] *[a d]]
+    *a               => *a
+\end{lstlisting}
+
+\subsection{Nock 8K}
+
+The compound opcodes reappear for the first time since \texttt{U} in Nock 8K.  An opcode 12 appears as TODO
+
+
+8K received an uncharacteristic amount of commentary, given a document prepared for its presentation at \textsc{sss10} \citep{Yarvin2010a}.
+% Yarvin2010a, https://github.com/cgyarvin/urbit/blob/900ef3b8ffc4a7245b74b816566ad23051a371b1/Spec/watt/sss10.tex
+
+Lambda was highlighted as a design pattern (a ``gate'' or stored procedure call) enabled by the ``core'' convention.  Notably, \lstinline[style=listingcode]{[[sample context] battery]} occurred in a different order than has been conventional since 2013 (emphasizing that the common core pattern is a convention rather than a requirement of Nock).
+
+\begin{lstlisting}[label=lst:nock8k,caption={Nock 8K, 25 July 2010.},style=listingcode]
+1 Structures
+
+    A noun is an atom or a cell.  An atom is any unsigned integer.
+    A cell is an ordered pair of nouns.
+
+2 Pseudocode
+
+    [a b c] is [a [b c]]; *a is nock(a).  Reductions match top-down.
+
+3 Reductions
+
+    ?[a b]            0
+    ?a                1
+    ^a                (a + 1)
+    =[a a]            0
+    =[a b]            1
+
+    /[1 a]            a
+    /[2 a b]          a
+    /[3 a b]          b
+    /[(a + a) b]      /[2 /[a b]]
+    /[(a + a + 1) b]  /[3 /[a b]]
+
+    *[a [b c] d]      [*[a b c] *[a d]]
+    *[a 0 b]          /[b a]
+    *[a 1 b]          b
+    *[a 2 b c]        *[*[a b] *[a c]]
+    *[a 3 b]          ?*[a b]
+    *[a 4 b]          ^*[a b]
+    *[a 5 b]          =*[a b]
+
+    *[a 6 b c d]      *[a 2 [0 1] 2 [1 c d] [1 0] 2 [1 2 3] [1 0] 4 4 b]
+    *[a 7 b c]        *[a 2 b 1 c]
+    *[a 8 b c]        *[a 7 [7 b [0 1]] c]
+    *[a 9 b c]        *[a 8 b 2 [[7 [0 3] d] [0 5]] 0 5]
+    *[a 10 b c]       *[a 8 b 8 [7 [0 3] c] 0 2]
+    *[a 11 b c]       *[a 8 b 7 [0 3] c]
+    *[a 12 b c]       *[a [1 0] 1 c]
+
+    ^[a b]            ^[a b]
+    =a                =a
+    /a                /a
+    *a                *a
+\end{lstlisting}
+
+\subsection{Nock 7K}
+
+TODO
+
+During this era, substantial development took place on the early Urbit operating system.  Nock began to be battle-tested in a way it had not previously been stressed.  Several decrements occurred in short order.
+
+Opcode 12 is reduced to TODO
+
+\begin{lstlisting}[label=lst:nock7k,caption={Nock 7K, \textit{terminus ad quem} 14 November 2010.},style=listingcode]
+1 Structures
+
+  A noun is an atom or a cell.  An atom is any natural number.
+  A cell is any ordered pair of nouns.
+
+2 Pseudocode
+
+  [a b c]           [a [b c]]
+  nock(a)           *a
+
+  ?[a b]            0
+  ?a                1
+  ^a                1 + a
+  =[a a]            0
+  =[a b]            1
+
+  /[1 a]            a
+  /[2 a b]          a
+  /[3 a b]          b
+  /[(a + a) b]      /[2 /[a b]]
+  /[(a + a + 1) b]  /[3 /[a b]]
+
+  *[a [b c] d]      [*[a b c] *[a d]]
+
+  *[a 0 b]          /[b a]
+  *[a 1 b]          b
+  *[a 2 b c]        *[*[a b] *[a c]]
+  *[a 3 b]          ?*[a b]
+  *[a 4 b]          ^*[a b]
+  *[a 5 b]          =*[a b]
+
+  *[a 6 b c d]      *[a 2 [0 1] 2 [1 c d] [1 0]
+                      2 [1 2 3] [1 0] 4 4 b]
+  *[a 7 b c]        *[a 2 b 1 c]
+  *[a 8 b c]        *[a 7 [[7 [0 1] b] 0 1] c]
+  *[a 9 b c]        *[a 7 c 0 b]
+  *[a 10 b c]       *[a c]
+  *[a 10 [b c] d]   *[a 8 c 7 [0 3] d]
+
+  ^[a b]            ^[a b]
+  =a                =a
+  /a                /a
+  *a                *a
+\end{lstlisting}
+
+\subsection{Nock 6K}
+
+TODO
+
+The axiomatic operator for increment was changed from \texttt{\^} to \texttt{+}.  The definition of opcode 8 (extend) was simplified somewhat, and the order XXX [0 2]
+
+\begin{lstlisting}[label=lst:nock6k,caption={Nock 6K, 6 July 2011.},style=listingcode]
+1 Structures
+
+  A noun is an atom or a cell.  An atom is any
+  natural number. A cell is an ordered pair of
+  nouns.
+
+2 Reductions
+
+  nock(a)           *a
+  [a b c]           [a [b c]]
+
+  ?[a b]            0
+  ?a                1
+  +a                1 + a
+  =[a a]            0
+  =[a b]            1
+
+  /[1 a]            a
+  /[2 a b]          a
+  /[3 a b]          b
+  /[(a + a) b]      /[2 /[a b]]
+  /[(a + a + 1) b]  /[3 /[a b]]
+
+  *[a [b c] d]      [*[a b c] *[a d]]
+
+  *[a 0 b]          /[b a]
+  *[a 1 b]          b
+  *[a 2 b c]        *[*[a b] *[a c]]
+  *[a 3 b]          ?*[a b]
+  *[a 4 b]          +*[a b]
+  *[a 5 b]          =*[a b]
+
+  *[a 6 b c d]      *[a 2 [0 1] 2 [1 c d] [1 0] 2 [1 2 3] [1 0] 4 4 b]
+  *[a 7 b c]        *[a 2 b 1 c]
+  *[a 8 b c]        *[a 7 [[0 1] b] c]
+  *[a 9 b c]        *[a 7 c 0 b]
+  *[a 10 b c]       *[a c]
+  *[a 10 [b c] d]   *[a 8 c 7 [0 2] d]
+
+  +[a b]            +[a b]
+  =a                =a
+  /a                /a
+  *a                *a
+\end{lstlisting}
+
+\subsection{Nock 5K}
+
+All trivial reductions of axiomatic operators were removed to the preface of the specification.
+
+(For instance, a trivial ``cosmetic'' change was made to 5K's specification after it was publicly posted in order to synchronize it with the VM's behavior
+% https://github.com/urbit/archaeology/commit/dd779c1e92d7200c2ce6c922052f1eb1d1642e4c
+)
+
+\begin{lstlisting}[label=lst:nock5k,caption={Nock 5K, 24 September 2012.},style=listingcode]
+1 Structures
+
+  A noun is an atom or a cell.  An atom is any natural number.
+  A cell is an ordered pair of nouns.
+
+2 Reductions
+
+  nock(a)           *a
+  [a b c]           [a [b c]]
+
+  ?[a b]            0
+  ?a                1
+  +[a b]            +[a b]
+  +a                1 + a
+  =[a a]            0
+  =[a b]            1
+  =a                =a
+
+  /[1 a]            a
+  /[2 a b]          a
+  /[3 a b]          b
+  /[(a + a) b]      /[2 /[a b]]
+  /[(a + a + 1) b]  /[3 /[a b]]
+  /a                /a
+
+  *[a [b c] d]      [*[a b c] *[a d]]
+
+  *[a 0 b]          /[b a]
+  *[a 1 b]          b
+  *[a 2 b c]        *[*[a b] *[a c]]
+  *[a 3 b]          ?*[a b]
+  *[a 4 b]          +*[a b]
+  *[a 5 b]          =*[a b]
+
+  *[a 6 b c d]      *[a 2 [0 1] 2 [1 c d] [1 0] 2 [1 2 3] [1 0] 4 4 b]
+  *[a 7 b c]        *[a 2 b 1 c]
+  *[a 8 b c]        *[a 7 [[7 [0 1] b] 0 1] c]
+  *[a 9 b c]        *[a 7 c 2 [0 1] 0 b]
+  *[a 10 [b c] d]   *[a 8 c 7 [0 3] d]
+  *[a 10 b c]       *[a c]
+
+  *a                *a
+\end{lstlisting}
+
+\subsection{Nock 4K}
+
+The primary change motivating 5K to 4K was the introduction of an edit operator \texttt{#}, which ameliorated the proliferation of cells in the Nock runtime's memory.  The edit operator is an optimization which makes modifications to a Nock data structure more efficient.  It's an interesting example of a change motivated by the runtime rather than theoretical or higher-level language concerns.
+
+Opcode 5 (equality) was rewritten to more explicit with application of the cell distribution rule.  Opcodes 6–9 were rewritten to utilize the \texttt{*} operator rather than routing via opcode 2.  Opcode 11 (formerly opcode 10) was likewise massaged.  In general, preferring to express rules using \texttt{*} proved to be slightly more terse than utilizing opcode 2.
+
+\begin{lstlisting}[label=lst:nock4k,caption={Nock 4K, October 2018.},style=listingcode]
+Nock 4K
+
+A noun is an atom or a cell.  An atom is a natural number.  A cell is an ordered pair of nouns.
+
+Reduce by the first matching pattern; variables match any noun.
+
+nock(a)             *a
+[a b c]             [a [b c]]
+
+?[a b]              0
+?a                  1
++[a b]              +[a b]
++a                  1 + a
+=[a a]              0
+=[a b]              1
+
+/[1 a]              a
+/[2 a b]            a
+/[3 a b]            b
+/[(a + a) b]        /[2 /[a b]]
+/[(a + a + 1) b]    /[3 /[a b]]
+/a                  /a
+
+#[1 a b]            a
+#[(a + a) b c]      #[a [b /[(a + a + 1) c]] c]
+#[(a + a + 1) b c]  #[a [/[(a + a) c] b] c]
+#a                  #a
+
+*[a [b c] d]        [*[a b c] *[a d]]
+
+*[a 0 b]            /[b a]
+*[a 1 b]            b
+*[a 2 b c]          *[*[a b] *[a c]]
+*[a 3 b]            ?*[a b]
+*[a 4 b]            +*[a b]
+*[a 5 b c]          =[*[a b] *[a c]]
+
+*[a 6 b c d]        *[a *[[c d] 0 *[[2 3] 0 *[a 4 4 b]]]]
+*[a 7 b c]          *[*[a b] c]
+*[a 8 b c]          *[[*[a b] a] c]
+*[a 9 b c]          *[*[a c] 2 [0 1] 0 b]
+*[a 10 [b c] d]     #[b *[a c] *[a d]]
+
+*[a 11 [b c] d]     *[[*[a c] *[a d]] 0 3]
+*[a 11 b c]         *[a c]
+
+*a                  *a
+\end{lstlisting}
 
 \section{The Future of Nock}
 
-SKEW
-PLAN
+While deviations from the trunk line of the Nock family have been propsed at various points,\footnote{Notably, Ax/Conk (see pp.~XX–XX, this volume), \textsc{skew}, and \textsc{plan} (see pp.~XX–XX, this volume).} Nock itself has remained the definitional substrate of Urbit since its inception.  It has also been adopted as the primary \textsc{isa} of Nockchain and the NockApp ecosystem.
 
+Why, then, do we contemplate further changes?  The \textsc{skew} proposal by \patp{siprel} and \patp{little-ponnys} argued that Nock 4K represented an undesirable saddle point in the design space of possible Nocks, itself a ``ball of mud'' \citep{Skew2020}.  While \textsc{skew} itself was not adopted, it inspired the development of \textsc{plan} as a solid-state computing architecture sharing some ambitions with Urbit and Nock.  A rigorously æsthetic argument can thus be sustained that Nock is not yet ``close enough'' to its final, diamond-perfect form to be a viable candidate.
 
-The most likely motivation for a future decrement seems to be the likelihood that some current operation is underspecified, and an implicit choice has been made by every contemporary implementation but should be surfaced.
-
+While some have found this argument compelling, Urbit's core developers have elected to maintain work in the ``main line'' of Nock as an \textsc{isa}.  The Nock 4K specification is a good candidate for a ``final'' version of Nock, as it is the most recent version and has been used in production for several years.  It seems more likely that subsequent changes to Nock will derive not from alternative representations but from either dramatically more elegant expressions (e.g., of opcode 6) or from an implicit underspecification in the current Nock 4K which should be made explicit.
 
 \section{Conclusion}
 
+Nock began life as a hyper-Turing machine language, a theoretical construct for the purpose of defining higher-level programming languages with appropriate affordances and semantics.  While its opcodes and syntax have gradually evolved over the course of two decades, the ambition to uproot the Unix ``ball of mud'' and replace it with a simple operating function amenable to reason has remained the north star of Urbit and Nock.
 
-
-Nock 1K should be the final form of the Nock \textsc{isa}, leaving one decrement for Gnon.
+The most recent version, Nock 4K, appears to provide all of the opcodes necessary for correct and efficient\footnote{Modulo the vagaries of the von Neumann architecture, etc.} evaluation.  It is likely that future versions of Nock will be based genetically on Nock 4K, but with some changes to improve its performance and usability.  The road to zero kelvin is likely very long still, given an abundance of caution, but it also appears to be straight.
 
 \printbibliography
 \end{document}
