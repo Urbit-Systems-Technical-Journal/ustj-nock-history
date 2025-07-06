@@ -15,8 +15,8 @@
 \fancyhead{}
 \fancyfoot[L]{{\footnotesize
               %% We toggle between these:
-              Manuscript submitted for review.\\
-              % {\it Urbit Systems Technical Journal} II:1 (2025):  1–3. \\
+            %   Manuscript submitted for review.\\
+              {\it Urbit Systems Technical Journal} II:1 (2025):  153–188. \\
               ~ \\
               Address author correspondence to \authorpatp.
               }}
@@ -43,7 +43,7 @@
 
 % We will adjust page numbering in final editing.
 \pagenumbering{arabic}
-\setcounter{page}{1}
+\setcounter{page}{153}
 
 \tableofcontents
 
@@ -1123,7 +1123,7 @@ Source:  \citet{Nock4K}
 
 \section{The Future of Nock}
 
-While deviations from the trunk line of the Nock family have been propsed at various points,\footnote{Notably, Ax (see pp.~XX–XX, this volume), \textsc{skew}, and \textsc{plan} (see pp.~XX–XX, this volume).} Nock itself has remained the definitional substrate of Urbit since its inception.  It has also been adopted as the primary \textsc{isa} of Nockchain and the NockApp ecosystem.
+While deviations from the trunk line of the Nock family have been proposed at various points,\footnote{Notably, Ax (see pp.~XX–XX, this volume), \textsc{skew}, and \textsc{plan} (see pp.~XX–XX, this volume).} Nock itself has remained the definitional substrate of Urbit since its inception.  It has also been adopted as the primary \textsc{isa} of Nockchain and the NockApp ecosystem.
 
 Why, then, do we contemplate further changes?  The \textsc{skew} proposal by \patp{siprel} and \patp{little-ponnys} argued that Nock 4K represented an undesirable saddle point in the design space of possible Nocks, itself a ``ball of mud'' \citep{Skew2020}.  While \textsc{skew} itself was not adopted, it inspired the development of Plunder and \textsc{plan} as a solid-state computing architecture sharing some ambitions with Urbit and Nock \citep{Plunder2025}.  A rigorously æsthetic argument can thus be sustained that Nock is not yet ``close enough'' to its final, diamond-perfect form to be a viable candidate.
 
@@ -1131,9 +1131,20 @@ While some have found this argument compelling, Urbit's core developers have ele
 
 \section{Conclusion}
 
+\begin{quote}
+A13:  If you don't completely understand your code and the semantics of all the code it depends on, your code is wrong.
+
+A21: Prefer mechanical simplicity to mathematical simplicity.  Often mechanical simplicity and mathematical simplicity go together.
+
+F1: If it's not deterministic, it isn't real.
+
+(\patp{wicdev-wisryt}, Urbit Precepts (2020))
+\end{quote}
+
 Nock began life as a hyper-Turing machine language, a theoretical construct for the purpose of defining higher-level programming languages with appropriate affordances and semantics.  While its opcodes and syntax have gradually evolved over the course of two decades, the ambition to uproot the Unix ``ball of mud'' and replace it with a simple operating function amenable to reason has remained the north star of Urbit and Nock.  The history of Nock serves as an index of refinement as Yarvin and contributors sought to balance conciseness, efficiency, and practicality.
 
 The most recent version, Nock 4K, appears to provide all of the opcodes necessary for correct and efficient\footnote{Modulo the vagaries of the von Neumann architecture, etc.} evaluation.  It is likely that future versions of Nock will be based genetically on Nock 4K, but with some changes to improve its performance and usability.  The road to zero kelvin is likely very long still, given an abundance of caution, but it also appears to be straight.
 
+\selectlanguage{USenglish}
 \printbibliography
 \end{document}
