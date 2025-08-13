@@ -2,6 +2,7 @@
 
 \usepackage{ustj}
 \usepackage{enumitem}  % for enumerate with labels
+\renewcommand{\headrulewidth}{0pt}
 
 \addbibresource{mss.bib}
 
@@ -15,16 +16,16 @@
 \fancyfoot[L]{{\footnotesize
               %% We toggle between these:
             %   Manuscript submitted for review.\\
-              {\it Urbit Systems Technical Journal} II:1 (2025):  153–188. \\
+              {\it Urbit Systems Technical Journal} II:1 (2025):  155–190. \\
               ~ \\
               Address author correspondence to \patp{lagrev-nocfep}.
               }}
 }
 %  Arrange subsequent pages:
 \fancyhf{}
-\fancyhead[LE]{{\urbitfont Urbit Systems Technical Journal}}
-\fancyhead[RO]{A History of Nock}
-\fancyfoot[LE,RO]{\thepage}
+% \fancyhead[LE]{{\urbitfont Urbit Systems Technical Journal}}
+% \fancyhead[RO]{A History of Nock}
+% \fancyfoot[LE,RO]{\thepage}
 
 %%MANUSCRIPT
 \title{A Documentary History of \\ the Nock Combinator Calculus}
@@ -42,7 +43,7 @@
 
 % We will adjust page numbering in final editing.
 \pagenumbering{arabic}
-\setcounter{page}{153}
+\setcounter{page}{155}
 
 \tableofcontents
 
@@ -65,7 +66,7 @@ Nock bears the following characteristics:
   % WikipediaMuRecursive https://en.wikipedia.org/wiki/General_recursive_function
   % Raphael2012 https://cs.stackexchange.com/questions/991/are-there-minimum-criteria-for-a-programming-language-being-turing-complete
 
-  \item  Functional (as in language).  Nock is a pure function of its arguments.  In practice, the Urbit operating system provides a simulated global scope for userspace applications, but this virtualized environment reduces to garden-variety Nock.  (See \citet{Davis2025b}, pp.~XX–XX in this volume, for details of a Nock virtualized interpreter.)
+  \item  Functional (as in language).  Nock is a pure function of its arguments.  In practice, the Urbit operating system provides a simulated global scope for userspace applications, but this virtualized environment reduces to garden-variety Nock.  (See \patp{lacnes}, pp.~71–97 in this volume, for details of a Nock virtualized interpreter.)
   \item  Subject-oriented.  Nock evaluation consists of a formula as a noun to be evaluated against a subject as a noun.  Taken together, these constitute the entire set of inputs to a pure function.
   
   Some Nock opcodes alter the subject (for instance a variable declaration) by producing a new subject which is utilized for subsequent axis lookups.
@@ -87,7 +88,7 @@ We have asserted without demonstration thus far that Nock is a combinator calcul
 %Wolfram2021 https://writings.stephenwolfram.com/2020/12/combinators-a-centennial-view/ but the book
 
 \noindent
-While Nock introduces a few more primitive operations as a practicality, the above identities establish its bona fides as a combinator calculus capable of general computation.  Similar to Haskell Curry's \textsc{bckw} system, which can be written in forms isomorphic to \textsc{ski}, Nock provides a set of primitive rules and a set of economic extended rules for convenience in writing a compiler.\footnote{See \citet{Galebach2025}, pp.~1–45 in this volume, for exposition on how to evaluate a Nock expression by hand or by interpreter.}
+While Nock introduces a few more primitive operations as a practicality, the above identities establish its bona fides as a combinator calculus capable of general computation.  Similar to Haskell Curry's \textsc{bckw} system, which can be written in forms isomorphic to \textsc{ski}, Nock provides a set of primitive rules and a set of economic extended rules for convenience in writing a compiler.\footnote{See \patp{timluc-miptec}, pp.~1–45 in this volume, for exposition on how to evaluate a Nock expression by hand or by interpreter.}
 
 In an early document, Yarvin explained two of his design criteria in producing Nock as a practical \textsc{isa} target \citep{Yarvin2010}:
 
@@ -96,7 +97,7 @@ In an early document, Yarvin explained two of his design criteria in producing N
   \item  Metacircularity without deep stacks; i.e., the ability to extend Nock semantics without altering the underlying substrate.
 \end{enumerate}
 
-This latter idea he particularly connected to the concept of what came to be called a ``scry namespace'':  ``dereferencing Urbit paths is as natural (and stateless) a function as increment or equals'' (ibid.).  Indeed, Urbit's current userspace utilizes such an affordance to replicate a global scope environment for accessing system and remote resources.  (See \citet{Davis2025b}, pp.~XX–XX in this volume, for a discussion of the Nock virtualized interpreter.)
+This latter idea he particularly connected to the concept of what came to be called a ``scry namespace'':  ``dereferencing Urbit paths is as natural (and stateless) a function as increment or equals'' (ibid.).  Indeed, Urbit's current userspace utilizes such an affordance to replicate a global scope environment for accessing system and remote resources.  (See \patp{lacnes}, pp.~71–97 in this volume, for a discussion of the Nock virtualized interpreter.)
 %Yarvin2010:  https://github.com/cgyarvin/urbit/blob/1bc9086a3fd62594e8bd631744cb9bf804f6a43b/Spec/urbit/5-whynock.txt
 
 
@@ -1062,7 +1063,7 @@ Source:  \citet{Nock5K}
 
 \subsection{Nock 4K}
 
-The primary change motivating 5K to 4K was the introduction of an edit operator \texttt{\#} hax, which ameliorated the proliferation of cells in the Nock runtime's memory.\footnote{The date must be earlier than 27 September 2018; cf.\ \href{https://github.com/urbit/urbit/pull/1027}{\texttt{urbit/urbit} \#1027}.}  The edit operator is an optimization which makes modifications to a Nock data structure more efficient.  It's a notable example of a change motivated by the pragmatics of the runtime rather than theoretical or higher-level language concerns.\footnote{See \patp{niblyx-malnus}, pp.~XX–XX, this volume, for a verbose derivation of the edit operator and opcode 10 from the primitive opcodes.}
+The primary change motivating 5K to 4K was the introduction of an edit operator \texttt{\#} hax, which ameliorated the proliferation of cells in the Nock runtime's memory.\footnote{The date must be earlier than 27 September 2018; cf.\ \href{https://github.com/urbit/urbit/pull/1027}{\texttt{urbit/urbit} \#1027}.}  The edit operator is an optimization which makes modifications to a Nock data structure more efficient.  It's a notable example of a change motivated by the pragmatics of the runtime rather than theoretical or higher-level language concerns.\footnote{See \patp{niblyx-malnus}, pp.~47–70 in this volume, for a verbose derivation of the edit operator and opcode 10 from the primitive opcodes.}
 
 Opcode 5 (equality) was rewritten to more explicit with application of the cell distribution rule.  Opcodes 6–9 were rewritten to utilize the \texttt{*} tar operator rather than routing via opcode 2.  Opcode 11 (formerly opcode 10) was likewise massaged.  In general, preferring to express rules using \texttt{*} tar proved to be slightly more terse than utilizing opcode 2.
 
@@ -1122,7 +1123,7 @@ Source:  \citet{Nock4K}
 
 \section{The Future of Nock}
 
-While deviations from the trunk line of the Nock family have been proposed at various points,\footnote{Notably, Ax (see pp.~XX–XX, this volume), \textsc{skew}, and \textsc{plan} (see pp.~XX–XX, this volume).} Nock itself has remained the definitional substrate of Urbit since its inception.  It has also been adopted as the primary \textsc{isa} of Nockchain and the NockApp ecosystem.
+While deviations from the trunk line of the Nock family have been proposed at various points,\footnote{Notably, Ax (see \patp{barpub-tarber}, pp.~XX–XX in this volume), \textsc{skew}, and \textsc{plan} (see \texttt{@sol\_plunder}, pp.~227–XXX in this volume).} Nock itself has remained the definitional substrate of Urbit since its inception.  It has also been adopted as the primary \textsc{isa} of Nockchain and the NockApp ecosystem.
 
 Why, then, do we contemplate further changes?  The \textsc{skew} proposal by \patp{siprel} and \patp{little-ponnys} argued that Nock 4K represented an undesirable saddle point in the design space of possible Nocks, itself a ``ball of mud'' \citep{Skew2020}.  While \textsc{skew} itself was not adopted, it inspired the development of Plunder and \textsc{plan} as a solid-state computing architecture sharing some ambitions with Urbit and Nock \citep{Plunder2025}.  A rigorously æsthetic argument can thus be sustained that Nock is not yet ``close enough'' to its final, diamond-perfect form to be a viable candidate.
 
@@ -1142,7 +1143,7 @@ F1: If it's not deterministic, it isn't real.
 
 Nock began life as a hyper-Turing machine language, a theoretical construct for the purpose of defining higher-level programming languages with appropriate affordances and semantics.  While its opcodes and syntax have gradually evolved over the course of two decades, the ambition to uproot the Unix ``ball of mud'' and replace it with a simple operating function amenable to reason has remained the north star of Urbit and Nock.  The history of Nock serves as an index of refinement as Yarvin and contributors sought to balance conciseness, efficiency, and practicality.
 
-The most recent version, Nock 4K, appears to provide all of the opcodes necessary for correct and efficient\footnote{Modulo the vagaries of the von Neumann architecture, etc.} evaluation.  It is likely that future versions of Nock will be based genetically on Nock 4K, but with some changes to improve its performance and usability.  The road to zero kelvin is likely very long still, given an abundance of caution, but it also appears to be straight.
+The most recent version, Nock 4K, appears to provide all of the opcodes necessary for correct and efficient evaluation.\footnote{Modulo the vagaries of the von Neumann architecture, etc.  See also the critique of \texttt{@sol\_plunder}, pp. XXX--XXX in this volume.}  It is likely that future versions of Nock will be based genetically on Nock 4K, but with some changes to improve its performance and usability.  The road to zero kelvin is likely very long still, given an abundance of caution, but it also appears to be straight.
 
 \selectlanguage{USenglish}
 \printbibliography
