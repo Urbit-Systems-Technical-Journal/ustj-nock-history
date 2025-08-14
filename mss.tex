@@ -1064,9 +1064,13 @@ Source:  \patp{sorreg-namtyv} (2012). %\citet{Nock5K}
 
 \subsection{Nock 4K}
 
-The primary change motivating 5K to 4K was the introduction of an edit operator \texttt{\#} hax, which ameliorated the proliferation of cells in the Nock runtime's memory.\footnote{The date must be earlier than 27 September 2018; cf.\ \href{https://github.com/urbit/urbit/pull/1027}{\texttt{urbit/urbit} \#1027}.}  The edit operator is an optimization which makes modifications to a Nock data structure more efficient.  It's a notable example of a change motivated by the pragmatics of the runtime rather than theoretical or higher-level language concerns.\footnote{See \patp{niblyx-malnus}, pp.~47–70 in this volume, for a verbose derivation of the edit operator and opcode 10 from the primitive opcodes.}
+The primary change motivating 5K to 4K was the introduction of an edit operator \texttt{\#} hax, which ameliorated the proliferation of cells in the Vere runtime's memory.\footnote{The dating of 4K is diffuse, deriving from discussions and tests throughout 2018.  It must be considered earlier than 27 September 2018; cf.\ \href{https://github.com/urbit/urbit/pull/1027}{\texttt{urbit/urbit} \#1027}.}  The edit operator is an optimization which makes modifications to a Nock data structure more efficient.  It's a notable example of a change motivated by the pragmatics of the runtime rather than theoretical or higher-level language concerns.\footnote{See \patp{niblyx-malnus}, pp.~47–70 in this volume, for a verbose derivation of the edit operator and opcode 10 from the primitive opcodes.}  As \patp{fodwyt-ragful}, one of the chief architects of this change, explained,
 
-Opcode 5 (equality) was rewritten to more explicit with application of the cell distribution rule.  Opcodes 6–9 were rewritten to utilize the \texttt{*} tar operator rather than routing via opcode 2.  Opcode 11 (formerly opcode 10) was likewise massaged.  In general, preferring to express rules using \texttt{*} tar proved to be slightly more terse than utilizing opcode 2.
+\begin{quote}
+It carries the intent better than the equivalent autocons, which can (and does, in Vere's case) carry into implementation.  Vere's edit operation checks if the target of the edit is 1) on the current road and 2) has a refcount of 1, and if so it does the edit in-place -- meaning, it mutates the memory rather than consing up a new object.  (Personal communication)\footnote{Furthermore, \patp{fodwyt-ragful} clarified how these changes related to his work on the Nock bytecode interpreter.  ``The relationship between the bytecode interpreter and the changes in 4K is only circumstantial. For instance, one of the things I did while working on the bytecode was implement \texttt{edit} and benchmark it against the version without \texttt{edit}.  We could see that we got an improvement, and that was going on at the same time the changes were being considered [anyway].  It would be inaccurate to say that something about the process of writing a bytecode interpreter caused us to realize that an \texttt{edit} operator in Nock would be a good idea'' (Personal communication).}
+\end{quote}
+
+Opcode 5 (equality) was rewritten to be more explicit with application of the cell distribution rule---in particular, \texttt{[5 0 1]} was valid in Nock 5K but difficult to optimize for in a practical compiler.  Opcodes 6–9 were rewritten to utilize the \texttt{*} tar operator rather than routing via opcode 2.  Opcode 11 (formerly opcode 10) was likewise massaged.  In general, preferring to express rules using \texttt{*} tar proved to be slightly more terse than utilizing opcode 2.
 
 \begin{lstlisting}[label=lst:nock4k,caption={Nock 4K, \textit{terminus ad quem} 27 September 2018.},style=listingcode]
 Nock 4K
@@ -1120,7 +1124,7 @@ nock(a)             *a
 *a                  *a
 \end{lstlisting}
 
-Source:  \patp{sorreg-namtyv} (2018). %\citet{Nock4K}
+Source:  \patp{sorreg-namtyv} \& \patp{fodwyt-ragful} (2018). %\citet{Nock4K}
 
 \section{The Future of Nock}
 
