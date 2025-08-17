@@ -16,7 +16,7 @@
 \fancyfoot[L]{{\footnotesize
               %% We toggle between these:
             %   Manuscript submitted for review.\\
-              {\it Urbit Systems Technical Journal} II:1 (2025):  155–190. \\
+              {\it Urbit Systems Technical Journal} II:1 (2025):  155–189. \\
               ~ \\
               Address author correspondence to \patp{lagrev-nocfep}.
               }}
@@ -111,7 +111,7 @@ Yarvin's background as a systems engineer with systems like Xaos Tools (for \tex
 \subsection[\texttt{U}]{U}
 
 \begin{quote}
-I have not really worked with combinator models, but my general impression is that it takes essentially an infinite amount of syntactic sugar to turn them into a programming language. \texttt{U} certainly takes some sweetener, but not, I think, as much.  (\patp{sorreg-namtyv}\footnote{\emph{Avant la lettre.}}, 2006)
+I have not really worked with combinator models, but my general impression is that it takes essentially an infinite amount of syntactic sugar to turn them into a programming language. \texttt{U} certainly takes some sweetener, but not, I think, as much.  (\patp{sorreg-namtyv}\footnote{\emph{Avant la lettre}; synonymous with Curtis Yarvin throughout.}, 2006)
 \end{quote}
 
 \sloppy
@@ -119,7 +119,7 @@ The earliest extant Nock is \texttt{U}, a proto-Nock posted to the \textit{Lambd
 %Yarvin2006a, http://lambda-the-ultimate.org/node/1269
 %Yarvin2006, https://web.archive.org/web/20060701070718/http://urbit.sourceforge.net/u.txt
 
-Extensive commentary on the operators is provided.  Rightwards grouping of tuple expressions has already been introduced.  Extension of the language is summarily ruled out.\footnote{Compare Ax and Conk by \patp{barpub-tarber}, pp.~191–227 in this volume.}  Data are conceived of as Unix-like byte streams; details of parsing and lexing are considered.  Terms (the ancestor of nouns) include a \texttt{NULL}-like ``foo'' type \texttt{\textasciitilde} distinguishable by value rather than structure.  \textsc{ascii} is built in as numeric codes, similar to G\"{o}del numbering.
+Extensive commentary on the operators is provided.  Rightwards grouping of tuple expressions has already been introduced.  Extension of the language is summarily ruled out.\footnote{Compare Ax and Conk by \patp{barpub-tarber}, pp.~191–227 in this volume.}  Data are conceived of as Unix-like byte streams; details of parsing and lexing are considered.  Terms (the ancestor of nouns) include a \texttt{NULL}-like ``foo'' type \texttt{\textasciitilde} distinguishable by value rather than structure.  \textsc{ascii} is built in as numeric codes, evocative of G\"{o}del numbering.
 
 As commenter Mario B.\ pointed out, the \texttt{U} specification permits \textsc{ski} operators with the simple expressions,
 
@@ -1124,15 +1124,15 @@ nock(a)             *a
 *a                  *a
 \end{lstlisting}
 
-Source:  \patp{sorreg-namtyv} \& \patp{fodwyt-ragful} (2018). %\citet{Nock4K}
+Source:  \patp{sorreg-namtyv}, \patp{rovnys-ricfer}, \& \patp{fodwyt-ragful} (2018). %\citet{Nock4K}
 
 \section{The Future of Nock}
 
-While deviations from the trunk line of the Nock family have been proposed at various points,\footnote{Notably, Ax (see \patp{barpub-tarber}'s Ax, pp.~191–227 in this volume), \textsc{skew}, and \textsc{plan} (see \texttt{@sol\_plunder}, pp.~227–XXX in this volume).} Nock itself has remained the definitional substrate of Urbit since its inception.  It has also been adopted as the primary \textsc{isa} of Nockchain and the NockApp ecosystem.
+While deviations from the trunk line of the Nock family have been proposed at various points,\footnote{Notably, Ax (see \patp{barpub-tarber}'s Ax, pp.~191–227 in this volume), \textsc{skew}, and \textsc{plan}.} Nock itself has remained the definitional substrate of Urbit since its inception.  It has also been adopted as the primary \textsc{isa} of Nockchain and the NockApp ecosystem.
 
 Why, then, do we contemplate further changes?  The \textsc{skew} proposal by \patp{siprel} and \patp{little-ponnys} argued that Nock 4K represented an undesirable saddle point in the design space of possible Nocks, itself a ``ball of mud'' \citep{Skew2020}.  While \textsc{skew} itself was not adopted, it inspired the development of Plunder and \textsc{plan} as a solid-state computing architecture sharing some ambitions with Urbit and Nock \citep{Plunder2025}.  A rigorously æsthetic argument can thus be sustained that Nock is not yet ``close enough'' to its final, diamond-perfect form to be a viable candidate.
 
-While some have found this argument compelling, Urbit's core developers have elected to maintain work in the ``main line'' of traditional Nock as the system's target \textsc{isa}.  The Nock 4K specification is a good candidate, in this sense, for a ``final'' version of Nock, as it has been successfully used in production for several years.  It seems more likely that subsequent changes to Nock will derive not from alternative representations but from either dramatically more elegant expressions (e.g., of \mbox{opcode} 6 or a combinator refactor) or from an \mbox{implicit} under\-specification in the current Nock 4K which should be made \mbox{explicit}.
+While some have found this argument compelling, Urbit's core developers have elected to maintain work in the main trunk of traditional Nock as the system's target \textsc{isa}.  The Nock 4K specification is a good candidate, in this sense, for a ``final'' version of Nock, as it has been successfully used in production for several years.  It seems more likely that subsequent changes to Nock will derive not from alternative representations but from either dramatically more elegant expressions (e.g., of \mbox{opcode} 6 or a combinator refactor) or from an \mbox{implicit} under\-specification in the current Nock 4K which should be made \mbox{explicit}.
 
 \section{Conclusion}
 
@@ -1148,7 +1148,7 @@ F1: If it's not deterministic, it isn't real.
 
 Nock began life as a hyper-Turing machine language, a theoretical construct for the purpose of defining higher-level programming languages with appropriate affordances and semantics.  While its opcodes and syntax have gradually evolved over the course of two decades, the ambition to uproot the Unix ``ball of mud'' and replace it with a simple operating function amenable to reason has remained the north star of Urbit and Nock.  The history of Nock serves as an index of refinement as Yarvin and contributors sought to balance conciseness, efficiency, and practicality.
 
-The most recent version, Nock 4K, appears to provide all of the opcodes necessary for correct and efficient evaluation.\footnote{Modulo the vagaries of the von Neumann architecture, etc.  See also the critique of \texttt{@sol\_plunder}, pp. XXX--XXX in this volume.}  It is likely that future versions of Nock will be based genetically on Nock 4K, but with some changes to improve its performance and usability.  The road to zero kelvin is likely very long still, given an abundance of caution, but it also appears to be straight.
+The most recent version, Nock 4K, appears to provide all of the opcodes necessary for correct and efficient evaluation.\footnote{Modulo the vagaries of the von Neumann architecture, etc.}  It is likely that future versions of Nock will be based genetically on Nock 4K, but with some changes to improve its performance and usability.  The road to zero kelvin is likely very long still, given an abundance of caution, but it also appears to be straight.
 
 \selectlanguage{USenglish}
 \printbibliography
