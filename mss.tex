@@ -7,7 +7,7 @@
 \addbibresource{mss.bib}
 
 \newcommand{\authorname}{N. E. Davis~\patp{lagrev-nocfep},\\Curtis Yarvin~\patp{sorreg-namtyv}}
-\newcommand{\affiliation}{Zorp Corp, Urbit Foundation}
+\newcommand{\affiliation}{Zorp Corp, Urban Tiger}
 
 %  Make first page footer:
 \fancypagestyle{firststyle}{%
@@ -16,7 +16,7 @@
 \fancyfoot[L]{{\footnotesize
               %% We toggle between these:
             %   Manuscript submitted for review.\\
-              {\it Urbit Systems Technical Journal} II:1 (2025):  155–189. \\
+              {\it Urbit Systems Technical Journal} II:1 (2025):  155–190. \\
               ~ \\
               Address author correspondence to \patp{lagrev-nocfep}.
               }}
@@ -58,7 +58,7 @@ Nock permits itself a finite number of specification changes, called ``decrement
 
 Fundamental computer science research has identified a family of universal computers which may be instantiated in a variety of ways, such as the Turing machine, the lambda calculus, and the combinator calculus.  Equivalence theorems such as the Church–Turing thesis show that these systems are equivalent in their computational power, and that they can be used to compute any computable function.  The combinator calculus is a family of systems which use a small set of combinators to express computation.  The most well-known member of this family is the \textsc{ski} combinator calculus, which uses only three combinators: \textsc{s}, \textsc{k}, and \textsc{i}.  Other members of this family include the \textsc{bckw} combinator calculus and the \textsc{h} combinator calculus.  These systems are all equivalent in their computational power, but they differ in their syntax and semantics.  The Nock combinator calculus is an extension of the \textsc{ski} combinator calculus which adds a few axiomatic rules to navigate and manipulate binary trees, carry out a very primitive arithmetic, and provide for side effects.
 
-Perhaps better put, Nock is a family of combinator calculi that sequentially converge on an ``optimal'' expressiveness for certain design desiderata.  This includes an economy of expression (thus several macro opcodes) and consideration of how a higher-level language would invoke stored procedural expressions.  Furthermore an opcode exists which produces and then ignores a computation, intended to signal to a runtime layer that a side effect may be desired by the caller.\footnote{An able if dated document from January 2010, \href{https://github.com/cgyarvin/urbit/blob/1bc9086a3fd62594e8bd631744cb9bf804f6a43b/Spec/urbit/5-whynock.txt}{\texttt{5-whynock.txt}}, further expounds desiderata for Nock in the context of Urbit as operating function.}
+Put perhaps better, Nock is a family of combinator calculi that sequentially converge on an ``optimal'' expressiveness for certain design desiderata.  This includes an economy of expression (thus several macro opcodes) and consideration of how a higher-level language would invoke stored procedural expressions.  Furthermore an opcode exists which produces and then ignores a computation, intended to signal to a runtime layer that a side effect may be desired by the caller.\footnote{An able if dated document from January 2010, \href{https://github.com/cgyarvin/urbit/blob/1bc9086a3fd62594e8bd631744cb9bf804f6a43b/Spec/urbit/5-whynock.txt}{\texttt{5-whynock.txt}}, further expounds desiderata for Nock in the context of Urbit as operating function.}
 
 Nock bears the following characteristics:
 
@@ -134,7 +134,7 @@ While early work (1940s--50s) had been carried out on ``minimal instruction set 
 %Madore2003 http://www.madore.org/~david/programs/unlambda/
 %Burger2006 https://software-lab.de/radical.pdf
 
-The \texttt{U} specification is in some ways the single most interesting historical document of our series.  Yarvin particularly identified a desire to avoid baking abstractions like variables and functions into the \texttt{U} cake, and an emphasis on client–server semantics.  The scry namespace appears \emph{avant la lettre} as a referentially transparent immutable distributed namespace.  \texttt{U} expresses a very ambitious hyper-Turing operator, acknowledging that its own instantiation from the specification is impossible and approximate.  Yarvin grapples in \texttt{U} with the halting problem (via his follow operator) and with the tension between a specification and an implementation (a gulf he highlighted as a human problem in his 2025 LambdaConf keynote address).  Furthermore, asides on issues like the memory arena prefigure implementation details of Vere as a runtime.
+The \texttt{U} specification is in some ways the single most interesting historical document of our series.  Yarvin particularly identified a desire to avoid baking abstractions like variables and functions into the \texttt{U} cake, and an emphasis on client–server semantics.  The scry namespace appears for the first time as a referentially transparent immutable distributed namespace.  \texttt{U} expresses a very ambitious hyper-Turing operator, acknowledging that its own instantiation from the specification is impossible and approximate.  Yarvin grapples in \texttt{U} with the halting problem (via his follow operator) and with the tension between a specification and an implementation (a gulf he highlighted as a human problem in his 2025 LambdaConf keynote address).  Furthermore, asides on issues like the memory arena prefigure implementation details of Vere as a runtime.
 
 \begin{lstlisting}[label=lst:u,caption={\texttt{U}, 31 January 2006.  The earliest extant patriarch of the Nock family.},style=listingcode]
 U: Definition
@@ -768,7 +768,7 @@ To define a language with Nock, construct two nouns, \texttt{q} and \texttt{r}, 
 \end{quote}
 
 \noindent
-More concretely, Watt (the predecessor to Hoon) is defined as:
+More concretely, Watt (the predecessor to Hoon, \citet{Yarvin2010a}) is defined as:
 
 \begin{lstlisting}[style=listingcode]
 urbit-formula == Watt(urbit-source)
@@ -1128,9 +1128,9 @@ Source:  \patp{sorreg-namtyv}, \patp{rovnys-ricfer}, \& \patp{fodwyt-ragful} (20
 
 \section{The Future of Nock}
 
-While deviations from the trunk line of the Nock family have been proposed at various points,\footnote{Notably, Ax (see \patp{barpub-tarber}'s Ax, pp.~191–227 in this volume), \textsc{skew}, and \textsc{plan}.} Nock itself has remained the definitional substrate of Urbit since its inception.  It has also been adopted as the primary \textsc{isa} of Nockchain and the NockApp ecosystem.
+While deviations from the trunk line of the Nock family have been proposed at various points,\footnote{Notably, Ax (see \patp{barpub-tarber}'s Ax, pp.~191–227 in this volume), \textsc{skew}, and \textsc{plan}.} Nock itself has remained the definitional substrate of Urbit since its inception.  It has also been adopted as the primary \textsc{isa} of the NockApp ecosystem.
 
-Why, then, do we contemplate further changes?  The \textsc{skew} proposal by \patp{siprel} and \patp{little-ponnys} argued that Nock 4K represented an undesirable saddle point in the design space of possible Nocks, itself a ``ball of mud'' \citep{Skew2020}.  While \textsc{skew} itself was not adopted, it inspired the development of Plunder and \textsc{plan} as a solid-state computing architecture sharing some ambitions with Urbit and Nock \citep{Plunder2025}.  A rigorously æsthetic argument can thus be sustained that Nock is not yet ``close enough'' to its final, diamond-perfect form to be a viable candidate.
+Why, then, do we contemplate further changes?  The \textsc{skew} proposal spearheaded by \patp{little-ponnys} and \patp{siprel} (2020) argued that Nock 4K represented an undesirable saddle point in the design space of possible Nocks, itself a ``ball of mud''.  While \textsc{skew} itself was not adopted, it inspired the development of Plunder and \textsc{plan} as a solid-state computing architecture sharing some ambitions with Urbit and Nock \citep{Plunder2025}.  A rigorously æsthetic argument can thus be sustained that Nock is not yet ``close enough'' to its final, diamond-perfect form to be a viable candidate.
 
 While some have found this argument compelling, Urbit's core developers have elected to maintain work in the main trunk of traditional Nock as the system's target \textsc{isa}.  The Nock 4K specification is a good candidate, in this sense, for a ``final'' version of Nock, as it has been successfully used in production for several years.  It seems more likely that subsequent changes to Nock will derive not from alternative representations but from either dramatically more elegant expressions (e.g., of \mbox{opcode} 6 or a combinator refactor) or from an \mbox{implicit} under\-specification in the current Nock 4K which should be made \mbox{explicit}.
 
@@ -1139,8 +1139,6 @@ While some have found this argument compelling, Urbit's core developers have ele
 \begin{quote}
 A13:  If you don't completely understand your code and the semantics of all the code it depends on, your code is wrong.
 
-A21: Prefer mechanical simplicity to mathematical simplicity.  Often mechanical simplicity and mathematical simplicity go together.
-
 F1: If it's not deterministic, it isn't real.
 
 (\patp{wicdev-wisryt}, Urbit Precepts (2020))
@@ -1148,8 +1146,9 @@ F1: If it's not deterministic, it isn't real.
 
 Nock began life as a hyper-Turing machine language, a theoretical construct for the purpose of defining higher-level programming languages with appropriate affordances and semantics.  While its opcodes and syntax have gradually evolved over the course of two decades, the ambition to uproot the Unix ``ball of mud'' and replace it with a simple operating function amenable to reason has remained the north star of Urbit and Nock.  The history of Nock serves as an index of refinement as Yarvin and contributors sought to balance conciseness, efficiency, and practicality.
 
-The most recent version, Nock 4K, appears to provide all of the opcodes necessary for correct and efficient evaluation.\footnote{Modulo the vagaries of the von Neumann architecture, etc.}  It is likely that future versions of Nock will be based genetically on Nock 4K, but with some changes to improve its performance and usability.  The road to zero kelvin is likely very long still, given an abundance of caution, but it also appears to be straight.
+The most recent version, Nock 4K, appears to provide all of the opcodes necessary for correct and efficient evaluation.\footnote{Modulo the vagaries of the von Neumann architecture, etc.}  It is likely that future versions of Nock will be based genetically on Nock 4K, but with some changes to improve its performance and usability.  The road to 0K is likely very long still, given an abundance of caution, but it also appears to be straight.
 
+\nocite{Nock13K, Nock12K, Nock11K, Nock10K, Nock9K, Nock8K, Nock7K, Nock6K, Nock5K, Nock4K}
 \selectlanguage{USenglish}
 \printbibliography
 \end{document}
