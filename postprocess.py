@@ -32,12 +32,13 @@ print(footnote_links)
 footnote_dict = {}
 for footnote_link in footnote_links:
     # Find the next `<a>` tag with an href.
-    footnote_id = re.search(r'<a href="#fn(\d)x(\d)">', html[footnote_link.end():])
-    # Find the next `<a>` tag with an id.
-    anchor_id = re.search(r'<a  id="x1-', html[footnote_link.end():])
+    footnote_id = re.search(r'<a href="#fn(\d+)x(\d+)">', html[footnote_link.end():])
+    # Find the next `<a>` tag with an id.  (Allow any amount of whitespace.)
+    anchor_id = re.search(r'<a\s+id="x1-', html[footnote_link.end():])
     # Store the footnote link and anchor in a dict.
     start = footnote_link.end() + anchor_id.span()[0] + len(anchor_id.group(0)) - 3
     begin = html[start:].find('"')
+    print(footnote_link, footnote_id, start)
     footnote_dict[footnote_id.group(0)[9:-2]] = html[start:start+begin]
 print(footnote_dict)
 
